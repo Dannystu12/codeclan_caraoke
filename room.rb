@@ -1,7 +1,9 @@
 class Room
-  attr_reader :name, :capacity
-  def initialize name, guests=[], playlist=[], capacity=10
-    @name, @guests, @playlist, @capacity = name, guests, playlist, capacity
+  attr_reader :name, :capacity, :fee
+  def initialize name, guests: [], playlist: [], capacity: 10, fee: 5
+    @name = name
+    @guests, @playlist = guests, playlist
+    @capacity, @fee = capacity, fee
   end
 
   def count_guests
@@ -13,7 +15,8 @@ class Room
   end
 
   def check_in_guest guest
-    @guests << guest if count_guests < @capacity
+    #pay money returns true if payment successful
+    @guests << guest if count_guests < @capacity && guest.pay_money(@fee)
   end
 
   def contains_guest? guest_or_name
