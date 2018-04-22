@@ -11,4 +11,15 @@ class Guest
   def can_afford? payment
     payment >= 0 && payment <= @money
   end
+
+  def check_playlist playlist
+    return unless @favourite_song
+    result = "No way! \"#{@favourite_song.title}\", is my Jam!!!"
+    result if playlist.include? @favourite_song
+  end
+
+  def == obj
+    obj.class == Guest && obj.name == @name && obj.money == @money && obj.favourite_song == @favourite_song
+  end
+
 end

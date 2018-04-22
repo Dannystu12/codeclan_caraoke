@@ -18,6 +18,8 @@ class Room
     return unless guest.can_afford? @fee
     @guests << guest if count_guests < @capacity
     guest.pay_money @fee
+    playlist_check = guest.check_playlist @playlist
+    p playlist_check if playlist_check
   end
 
   def contains_guest? guest

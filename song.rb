@@ -3,4 +3,8 @@ class Song
   def initialize title, artist
     @title, @artist = title, artist
   end
+
+  def == obj
+    obj.class == Song && obj.title == @title && obj.artist == @artist
+  end
 end

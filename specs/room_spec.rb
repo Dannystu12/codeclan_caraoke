@@ -6,16 +6,16 @@ require_relative '../room.rb'
 
 class RoomTest < MiniTest::Test
   def setup
+    song_1 = Song.new "Forty Six & 2", "Tool"
+    song_2 = Song.new "Tornado of Souls", "Megadeth"
+    @playlist = [song_1, song_2]
+
     guest_1 = Guest.new "Daniel", 10
     guest_2 = Guest.new "Connor", 9
     @guests = [guest_1, guest_2]
 
-    @guest_1 = Guest.new "Gordon", 10
+    @guest_1 = Guest.new "Gordon", 10, song_1
     @guest_2 = Guest.new "Andrew", 3.50
-
-    song_1 = Song.new "Forty Six & 2", "Tool"
-    song_2 = Song.new "Tornado of Souls", "Megadeth"
-    @playlist = [song_1, song_2]
 
     @room_1 = Room.new "Metal Room", guests:@guests, playlist:@playlist, \
     capacity:3, fee: 10
@@ -56,9 +56,9 @@ class RoomTest < MiniTest::Test
   end
 
   def test_check_in_guest__success
-    @room_2.check_in_guest @guest_1
-    assert_equal 1, @room_2.count_guests
-    assert_equal 5, @guest_1.money
+    @room_1.check_in_guest @guest_1
+    assert_equal 3, @room_1.count_guests
+    assert_equal 0, @guest_1.money
   end
 
   def test_check_in_guest__fail_capacity
