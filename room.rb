@@ -15,11 +15,11 @@ class Room
   end
 
   def check_in_guest guest
-    return unless guest.can_afford? @fee
-    @guests << guest if count_guests < @capacity
+    return unless guest.can_afford?(@fee) && count_guests < @capacity
+    @guests << guest
     guest.pay_money @fee
     playlist_check = guest.check_playlist @playlist
-    p playlist_check if playlist_check
+    playlist_check ? playlist_check : nil
   end
 
   def contains_guest? guest

@@ -56,21 +56,25 @@ class RoomTest < MiniTest::Test
   end
 
   def test_check_in_guest__success
-    @room_1.check_in_guest @guest_1
+    result = @room_1.check_in_guest @guest_1
+    expected = "No way! \"Forty Six & 2\", is my Jam!!!"
     assert_equal 3, @room_1.count_guests
     assert_equal 0, @guest_1.money
+    assert_equal result, expected
   end
 
   def test_check_in_guest__fail_capacity
     @room_1.check_in_guest @guest_1
-    @room_1.check_in_guest @guest_2
+    result = @room_1.check_in_guest @guest_2
     assert_equal 3, @room_1.count_guests
+    assert_nil result
   end
 
   def test_check_in_guest__fail_money
-    @room_1.check_in_guest @guest_2
+    result = @room_1.check_in_guest @guest_2
     assert_equal 2, @room_1.count_guests
     assert_equal 3.50, @guest_2.money
+    assert_equal nil, result
   end
 
   def test_guest_check_out__success
