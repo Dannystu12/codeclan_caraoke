@@ -1,12 +1,14 @@
 class Guest
-  attr_reader :name, :money
-  def initialize name, money
-    @name, @money = name, money
+  attr_reader :name, :money, :favourite_song
+  def initialize name, money, favourite_song=nil
+    @name, @money, @favourite_song = name, money, favourite_song
   end
 
   def pay_money payment
-    return false if payment < 0 || payment > @money
-    @money -= payment
-    true
+    @money -= payment if can_afford?(payment)
+  end
+
+  def can_afford? payment
+    payment >= 0 && payment <= @money
   end
 end

@@ -15,19 +15,25 @@ class GuestTest < MiniTest::Test
     assert_equal 10, @guest_1.money
   end
 
+  def test_can_afford__true
+    assert_equal true, @guest_1.can_afford?(10)
+  end
+
+  def test_can_afford__false
+    assert_equal false, @guest_1.can_afford?(11)
+    assert_equal false, @guest_1.can_afford?(-1)
+  end
+
   def test_pay_money__success
-    result = @guest_1.pay_money 5.40
+    @guest_1.pay_money 5.40
     assert_equal 4.60, @guest_1.money
-    assert_equal true, result
   end
 
   def test_pay_money__fail
-    result = @guest_1.pay_money 100
+    @guest_1.pay_money 100
     assert_equal 10, @guest_1.money
-    assert_equal false, result
 
-    result = @guest_1.pay_money -1
+    @guest_1.pay_money -1
     assert_equal 10, @guest_1.money
-    assert_equal false, result
   end
 end
