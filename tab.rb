@@ -5,7 +5,7 @@ class Tab
     raise ArgumentError.new(error_str) if balance <= 0
 
     error_str = "guest cannot afford initial tab"
-    raise ArgumentError.new(error_str) if !guest.can_afford?(balance)
+    raise Exception.new(error_str) if !guest.can_afford?(balance)
 
     @guest, @balance, @paid = guest, balance, false
   end

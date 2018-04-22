@@ -3,6 +3,7 @@ require 'minitest/rg'
 require_relative '../guest.rb'
 require_relative '../song.rb'
 require_relative '../room.rb'
+require_relative '../tab.rb'
 
 class RoomTest < MiniTest::Test
   def setup
@@ -10,15 +11,18 @@ class RoomTest < MiniTest::Test
     song_2 = Song.new "Tornado of Souls", "Megadeth"
     @playlist = [song_1, song_2]
 
+    @song_1 = Song.new("Cry Of The Banshee", "Brocas Helm")
+
+    @guest_1 = Guest.new "Gordon", 20, song_1
+    @guest_2 = Guest.new "Andrew", 10
+
+    @room_1 = Room.new "Metal Room", playlist:@playlist, \
+    capacity:3, fee: 10, song_fee: 2
     guest_1 = Guest.new "Daniel", 10
-    guest_2 = Guest.new "Connor", 9
-    @guests = [guest_1, guest_2]
+    guest_2 = Guest.new "Connor", 10
+    @room_1.check_in_guest guest_1
+    @room_1.check_in_guest guest_2
 
-    @guest_1 = Guest.new "Gordon", 10, song_1
-    @guest_2 = Guest.new "Andrew", 3.50
-
-    @room_1 = Room.new "Metal Room", guests:@guests, playlist:@playlist, \
-    capacity:3, fee: 10
     @room_2 = Room.new "Rap Room"
   end
 
@@ -59,8 +63,8 @@ class RoomTest < MiniTest::Test
     result = @room_1.check_in_guest @guest_1
     expected = "No way! \"Forty Six & 2\", is my Jam!!!"
     assert_equal 3, @room_1.count_guests
-    assert_equal 0, @guest_1.money
     assert_equal result, expected
+    assert_equal 3, @room_1.tab_count
   end
 
   def test_check_in_guest__fail_capacity
@@ -68,25 +72,66 @@ class RoomTest < MiniTest::Test
     result = @room_1.check_in_guest @guest_2
     assert_equal 3, @room_1.count_guests
     assert_nil result
+    assert_equal 3, @room_1.tab_count
   end
 
   def test_check_in_guest__fail_money
-    result = @room_1.check_in_guest @guest_2
+    @guest_2.pay_money(7)
+    result = @room_1.check_in_guest(@guest_2)
     assert_equal 2, @room_1.count_guests
-    assert_equal 3.50, @guest_2.money
-    assert_equal nil, result
+    assert_nil result
+    assert_equal 2, @room_1.tab_count
   end
 
   def test_guest_check_out__success
     @room_1.check_in_guest @guest_1
     @room_1.check_out_guest @guest_1
     assert_equal 2, @room_1.count_guests
+    assert_equal 2, @room_1.tab_count
+    assert_equal 10, @guest_1.money
   end
 
   def test_guest_check_out__fail
     @room_1.check_out_guest @guest_1
     assert_equal 2, @room_1.count_guests
+    assert_equal 2, @room_1.tab_count
+    assert_equal 20, @guest_1.money
   end
 
+  def test_tab_count
+    assert_equal 2, @room_1.tab_count
+  end
 
+  def test_buy_song__success
+    @room_1.check_in_guest @guest_1
+    @room_1.buy_song @guest_1, @song_1
+    assert_equal 3, @room_1.playlist_size
+    assert_equal 12, @room_1.get_tab(@guest_1).balance
+  end
+
+  def test_buy_song__fail_not_checked_in
+    @room_1.buy_song @guest_1, @song_1
+    assert_equal 2, @room_1.playlist_size
+    assert_nil @room_1.get_tab @guest_1
+  end
+
+  def test_buy_song__fail_not_enough_money
+    @room_1.check_in_guest @guest_2
+    @room_1.buy_song @guest_2, @song_1
+    assert_equal 2, @room_1.playlist_size
+    assert_equal 10, @room_1.get_tab(@guest_2).balance
+  end
+
+  def test_play_next_song__songs_left
+    result = @room_1.play_next_song
+    expected = "Now playing \"Forty Six & 2\" by Tool"
+    assert_equal expected, result
+    assert_equal 1, @room_1.playlist_size
+  end
+
+  def test_play_next_song__no_songs_left
+    2.times{@room_1.play_next_song}
+    assert_nil @room_1.play_next_song
+    assert_equal 0, @room_1.playlist_size
+  end
 end
